@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.signup = void 0;
 const passwordHashing_1 = require("../../util/bcrypt/passwordHashing");
 const genarateToken_1 = __importDefault(require("../../util/jwt/genarateToken"));
+const userCreatedProducer_1 = require("../../util/kafka/producers/userCreatedProducer");
 const signup = (dependancies) => {
     const { useCases: { signupUserUseCase, findUserByEmailUerCase } } = dependancies;
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,7 +58,7 @@ const signup = (dependancies) => {
                 const token = (0, genarateToken_1.default)({
                     userId: userId,
                     userEmail: user.email,
-                    isAdmin: user.isAdmin,
+                    isAdmin: user.isBlocked,
                     isBlock: user.isBlocked
                 });
                 res.cookie('auth', token, {
@@ -65,6 +66,19 @@ const signup = (dependancies) => {
                     httpOnly: true
                 });
                 res.status(201).json({ success: true, data: user, message: 'User Created' });
+                const addedUser = {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    password: user.password,
+                    role: user.role,
+                    isBlocked: user.isBlocked,
+                };
+                if (addedUser) {
+                    console.log(addedUser, 'this is addeduser');
+                    yield (0, userCreatedProducer_1.userCreatedProducer)(addedUser);
+                    console.log('user producer complete');
+                }
             }
             else {
                 res.status(404).json({ success: false, message: 'User not found' });

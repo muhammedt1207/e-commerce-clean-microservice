@@ -6,12 +6,8 @@ export const adminRoutes=(dependancies:IDependencies)=>{
     const route =Router()
 
 
-    // route.route('/login').post(login)
- route.get('/login',(req,res)=>{
-    console.log("@@@@@#$%^&*()");
-    res.send("helkkofnfindi")
-    
- })
+    route.route('/login').post(login)
+//  route.post('/login',())
 
     return route
 }

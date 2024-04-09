@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { ObjectId, Schema } from "mongoose";
 
 enum Role{
     user="user",
@@ -6,7 +6,7 @@ enum Role{
 }
 
 export interface IUserEntity{
-    _id:Schema.Types.ObjectId,
+    _id?:Schema.Types.ObjectId,
     username:string,
     email:string,
     password:string,

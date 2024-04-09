@@ -15,13 +15,14 @@ app.use(express.json)
 app.use(cookieParser())
 app.use(morgan('short'))
 
-app.use(adminRoutes(dependancies))
+app.use('/',adminRoutes(dependancies))
 
 app.use((err:Error , req:Request,res:Response,next:NextFunction)=>{
     const errorResonse={
         errors:[{message:err.message}]
     }
-    return res.status(500).json(errorResonse)
+    console.log(errorResonse);
+    return res.status(500).json(err)
 })
 
 app.listen(port,()=>{

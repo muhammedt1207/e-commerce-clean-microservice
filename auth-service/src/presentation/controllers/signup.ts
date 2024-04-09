@@ -2,6 +2,7 @@ import { NextFunction,Request,Response } from "express";
 import { IDependencies } from "../../application/interfaces/IDependencies";
 import { passwordHashing } from "../../util/bcrypt/passwordHashing";
 import genarateToken from "../../util/jwt/genarateToken";
+import { userCreatedProducer } from "../../util/kafka/producers/userCreatedProducer";
 
 
 export  const signup=(dependancies:IDependencies)=>{
@@ -44,19 +45,37 @@ export  const signup=(dependancies:IDependencies)=>{
             const hashedPassword: string | null = await passwordHashing(credential.password);
             credential.password=hashedPassword;
             const user=await signupUserUseCase(dependancies).execute(credential);
+
             if(user){
                 const userId:string=user._id?.toString()?? "";
                 const token=genarateToken({
                     userId:userId,
                     userEmail:user.email,
-                    isAdmin:user.isAdmin,
+                    isAdmin:user.isBlocked,
                     isBlock:user.isBlocked
                 })
                 res.cookie('auth',token,{
                     maxAge:1000*60*60*24,
                     httpOnly:true
                 })
+
                 res.status(201).json({success:true,data:user,message:'User Created'})
+                const addedUser = {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    password: user.password,
+                    role: user.role,
+                    isBlocked: user.isBlocked,
+                  
+                  };
+                  if (addedUser) {
+                    console.log(addedUser,'this is addeduser');
+                    
+                    await userCreatedProducer(addedUser);
+                    console.log('user producer complete');
+                    
+                  }
             }else{
                 res.status(404).json({success:false,message:'User not found'})
             }

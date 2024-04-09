@@ -15,12 +15,13 @@ const port = Number(process.env.port) | 3002;
 app.use(express_1.default.json);
 app.use((0, cookie_parser_1.default)());
 app.use(morgan('short'));
-app.use((0, adminRoutes_1.adminRoutes)(depencies_1.dependancies));
+app.use('/', (0, adminRoutes_1.adminRoutes)(depencies_1.dependancies));
 app.use((err, req, res, next) => {
     const errorResonse = {
         errors: [{ message: err.message }]
     };
-    return res.status(500).json(errorResonse);
+    console.log(errorResonse);
+    return res.status(500).json(err);
 });
 app.listen(port, () => {
     console.log('admin server running port', port);

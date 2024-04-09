@@ -1,4 +1,4 @@
-import {ObjectId} from 'mongoose';
+import {ObjectId, Schema} from 'mongoose';
 
 
 enum Role{
@@ -7,11 +7,10 @@ enum Role{
 }
 
 export  interface UserEntity{
-    _id?:ObjectId|string;
-    usename:string;
+    _id:Schema.Types.ObjectId;
+    username:string;
     email:string;
     password:string;
     role:Role;
-    isAdmin:boolean;
     isBlocked:boolean
 }

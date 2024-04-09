@@ -1,11 +1,11 @@
-name: Build & Publish auth service Docker Image
+name: Build & Publish cart service Docker Image
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'auth-service/**'
+      - 'cart-service/**'
 
 jobs:
   push_to_registry:
@@ -24,6 +24,6 @@ jobs:
       - name: Build and Push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./auth-service/
+          context: ./cart-service/
           push: true
-          tags: muhammedt1207/auth-service:latest
+          tags: muhammedt1207/cart-service:latest
